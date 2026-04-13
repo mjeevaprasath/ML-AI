@@ -1,21 +1,26 @@
-print("JARVIS IS STARTING...")
-
-try:
 # ===============================
 #     -JARVIS PERSONAL ASSISTANT- 
 # ===============================
-    import os
-    os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-  
-    import speech_recognition as sr
-    import pyttsx3
+import os
+from pydoc import text
+import sys
+from urllib import response
+
+
+try:
     import time
+    print("Jarvis Is Starting...")
+    time.sleep(1)
+
+    import speech_recognition as sr
+    import pyttsx3  
     import datetime
     import webbrowser
     import random
     import requests
+    import edge_tts
+    import asyncio
     from langdetect import detect
-    from gtts import gTTS
     from selenium import webdriver
     from selenium.webdriver.common.by import By
     from selenium.webdriver.chrome.service import Service
@@ -23,17 +28,60 @@ try:
     from webdriver_manager.chrome import ChromeDriverManager
     import threading
     import logging
+    import pyautogui
+    import json
 
-    import sys
+#===============================
+#     MEMORY SYSTEM (HYBRID) 
+# ===============================
+
+    MEMORY_FILE = "memory.json"
+
+    def save_memory(key, value):
+        data = {}
+        if os.path.exists(MEMORY_FILE):
+            with open(MEMORY_FILE, "r") as f:
+                data = json.load(f)
+
+        data[key] = value
+
+        with open(MEMORY_FILE, "w") as f:
+            json.dump(data, f)
+
+#===============================
+#     GET MEMORY (HYBRID)
+# ===============================
+
+    def get_memory(key):
+        if os.path.exists(MEMORY_FILE):
+            with open(MEMORY_FILE, "r") as f:
+               data = json.load(f)
+               return data.get(key)
+        return None
+
+    def search_google_auto(query):
+        webbrowser.open("https://www.google.com")
+        time.sleep(3)  # wait for browser
+
+        pyautogui.write(query, interval=0.05)
+        pyautogui.press("enter")
+
+        speak("Here are the results, sir")
+
+    os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
+
     import google.genai as genai
-    api_key= "AIzaSyCs97iiIikwzhH-Y7XpseYXSgklyGUa11I"
 
-    if not api_key:
-       print("API KEY MISSING....")
-    else:
-       client = genai.Client(api_key=api_key)
-       print("JARVIS IS READY...")   
+#===============================
+#     -.env file- 
+# ===============================
+    from dotenv import load_dotenv
 
+# Force To Load .env correctly
+    load_dotenv()
+
+# Warning-ah Stop Used
+    OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
     import warnings
     warnings.filterwarnings("ignore")
@@ -56,29 +104,30 @@ try:
 # -------------------------
 
     try:
-       import pygame
-       pygame.init()
-    except:
-       print("Pygame not available , skipping sound audio")
-       pass    
-
-    if pygame:
-       try:
-        pygame.mixer.init()
+        import pygame
         pygame.init()
-        print("Audio system ready")
-       except Exception as e:
-        print("Audio system failed",e)
-        pygame = None
+        pygame_available = True
+    except:
+        print("Pygame not available , skipping sound audio")
+        pygame_available = False    
+
+    if pygame_available:
+        try:
+            pygame.mixer.init()
+            pygame.init()
+            print("Audio system ready")
+        except Exception as e:
+            print("Audio system failed",e)
+            pygame = None  
     else:
-       print("Pygame not available")        
+         print("Pygame not available")        
 #clock = pygame.time.Clock()
 
 # -------------------------
 #      SPEECH RECOGNITION
 # -------------------------
     r = sr.Recognizer()
-    r.energy_threshold = 300
+    r.energy_threshold = 400
     r.pause_threshold = 0.8
 
 # -------------------------
@@ -89,14 +138,14 @@ try:
     engine.setProperty('volume', 1)
 
     def clean_command(command):
-      command = command.lower()
+        command = command.lower()
 
     # remove wake words
-      command = command.replace("jarvis", "")
-      command = command.replace("hey", "")
-      command = command.replace("please", "")
+        command = command.replace("jarvis", "")
+        command = command.replace("hey", "")
+        command = command.replace("please", "")
 
-      return command.strip()
+        return command.strip()
 
 # -------------------------
 #      INTERNET CHECK
@@ -113,99 +162,79 @@ try:
 # -------------------------
 #      SPEAK FUNCTION
 # -------------------------
-    def speak(text, mood="neutral"):
-      global is_speaking
+    # Anime Voice Function
+    async def amime_speak_logic(text):
+    #Next
+    # Used This One 'en-US-JennyNeural' for more clear voice with mood.
+    # -----------------------------------------------------------------------------------------------------------------------------
+    #Next 
+    # Used This One 'en-US-GuyNeural' Cool And Calm (Iron Man Jarvis Style). (I like This One).
+    # -----------------------------------------------------------------------------------------------------------------------------
+    #Next 
+    # Used This One 'en-GB-RyanNeural' for more deep and clear voice with mood.
+    # -----------------------------------------------------------------------------------------------------------------------------
+    # Next
+    # Used This One 'en-US-AnaNeural' Cute And Soft (Classic Anime Female Lead Voice). (But I Used This One Bcz Anime Voice Chart)
+    # -----------------------------------------------------------------------------------------------------------------------------
+    # Next
+    # Used This One 'en-US-AriaNeural' Energetic and clear voice, good for motivational and happy mood.
 
-      if is_speaking:   # LOCK MIC
-        return
-   
-      is_speaking = True
+       VOICE = "en-US-AnaNeural" 
+       OUTPUT_FILE = "voice.mp3"
+    
+       communicate = edge_tts.Communicate(text, VOICE)
+       await communicate.save(OUTPUT_FILE)
 
+    # Play the sound
+       pygame.mixer.music.load(OUTPUT_FILE)
+       pygame.mixer.music.play()
 
-      if mood == "happy":
-        text = "Hey! " + text
-      elif mood == "sad":
-        text = "Hmm... " + text
+       while pygame.mixer.music.get_busy():
+            await asyncio.sleep(0.1)
+    
+       pygame.mixer.music.stop()
+       # File was delete then unload now
+       pygame.mixer.music.unload()
+       if os.path.exists(OUTPUT_FILE):
+            os.remove(OUTPUT_FILE)
 
-      if internet:
+# Main Speak Wrapper
+    def speak(text):
+        global is_speaking
+        if is_speaking: return
+        is_speaking = True
+        print(f"🤖 Jarvis: {text}")
+
         try:
-            filename = "voice.mp3"
-            tts = gTTS(text=text, lang="en", slow=False)
-            tts.save(filename)
-
-            pygame.mixer.music.load(filename)
-            pygame.mixer.music.play()
-
-            while pygame.mixer.music.get_busy():
-                time.sleep(0.1)
-
-            pygame.mixer.music.stop()
-            os.remove(filename)
-
-        except:
+            asyncio.run(amime_speak_logic(text))
+        except Exception as e:
+            print("Network error, switching to offline voice...")
             engine.say(text)
             engine.runAndWait()
-      else:
-        engine.say(text)
-        engine.runAndWait()
 
-      time.sleep(0.5)  # small buffer
-      is_speaking = False   # UNLOCK
-
-    def ask_gpt(prompt):
-        try:
-         response = client.models.generate_content(
-            model="gemini-1.5-flash",
-            contents=f"You are Jarvis. Speak short and clear.\nUser: {prompt}"
-         )
-
-         return response.text.strip()
-
-        except Exception as e:
-          print("AI ERROR:", e)
-          return "Sorry sir, I couldn't think right now."
+        is_speaking = False
 # -------------------------
 #      LISTEN FUNCTION
 # -------------------------
     def listen():
-
-        r.pause_threshold = 0.8
-        r.energy_threshold = 300
-
-        global is_speaking, is_listening_shown
-
-        if is_speaking:
-          time.sleep(0.3)
-          return ""
-
-    # Show only once
-        if not is_listening_shown:
-          print("🎤 Listening...")
-          is_listening_shown = True
- 
-        with sr.Microphone() as source:
-          r.adjust_for_ambient_noise(source, duration=0.5)
-
-          try:
-            audio = r.listen(source, timeout=5, phrase_time_limit=5)
-          except:
-            return ""
+    # \r extra spaces use panna thaan blink problem solve aagum
+        print("\r🎤 Jarvis is listening...          ", end="", flush=True)
 
         try:
-           command = r.recognize_google(audio).lower()
-           print("You said:", command)
+            with sr.Microphone() as source:
+            # 0.2 duration makes it very fast
+                r.adjust_for_ambient_noise(source, duration=0.2)
+            # Timeout 3 and Phrase 3 is enough for wake words
+                audio = r.listen(source, timeout=3, phrase_time_limit=3)
 
-           is_listening_shown = False   # RESET after hearing
+            print("\r🔍 Processing...                ", end="", flush=True)
+            command = r.recognize_google(audio).lower()
+            print(f"\n👤 You: {command}")
+            return command
 
-           if not command:
-             time.sleep(0.5)
-             return ""
-
-           return command
-
-        except:
-           is_listening_shown = False
-           return ""
+        except (sr.WaitTimeoutError, sr.UnknownValueError, Exception):
+            print("\r                                 ", end="", flush=True)
+            return ""
 # -------------------------
 #      SENTIMENT MODEL
 # -------------------------
@@ -258,71 +287,65 @@ try:
 # ------------------------- 
     def smart_parse(command):
         command = command.lower()
-        actions = []
+    
+        ai_keywords = ["what is", "who is", "how to", "why is", "explain", "define", "tell me about","what are", "who are", "how do", "why do", "can you", "could you", "would you", "do you know", "is it true that"]
+        if any(word in command for word in ai_keywords):
+          return [] # Empty list anupuna thaan loop AI-ku pogum!
 
-    #  FIX CLEANING
-        command = command.replace("search on youtube", "")
-        command = command.replace("search youtube", "")
-        command = command.replace("on youtube", "")
-        command = command.replace("youtube", "")
-
-    #  REMOVE JUNK WORDS
-        for word in ["search", "play", "open"]:
-           command = command.replace(word, "")
-
-           query = command.strip()
-
-           if query:
-             actions.append(("youtube", query))
-           else:
-             actions.append(("youtube", ""))
- 
-           return actions
+    # YouTube Commands logic
+        if "play" in command or "search" in command:
+        # "play" and "search" words-ah mattum remove pannanum
+           query = command.replace("play", "").replace("search", "").strip()
+           return [("youtube", query)]
+        
+        return []
 # -------------------------
 #      EXECUTE SMART COMMAND
 # -------------------------
     def execute_smart_command(command):
         actions = smart_parse(command)
- 
+    
+        # 1. EMPTY CHECK (AI-ku poga idhu thaan vazhi)
+        if not actions:
+           return "not_found"
+
         for action, value in actions:
+            # 2. SEARCH LOGIC
+            if action == "search":
+               speak(f"Searching {value}")
+               webbrowser.open(f"https://www.google.com/search?q={value}")
+               return "done"
 
-          if action == "search":
-            speak(f"Searching {value}")
-            webbrowser.open(f"https://www.google.com/search?q={value}")
-            return "done"
+            # 3. YOUTUBE LOGIC
+            elif action == "youtube":
+                if value:
+                   speak(f"Ok sir, opening YouTube and playing {value}")
+                   threading.Thread(target=play_youtube_video, args=(value,), daemon=True).start()
+                   return "done"
+                else:
+                   speak("Ok sir, opening YouTube")
+                   webbrowser.open("https://youtube.com")
+                   return "done"
 
-        
-          elif action == "youtube":
-            if value:
-               speak(f"Ok sir, opening YouTube and playing {value}")
-            else:
-               speak("Ok sir, opening YouTube")
-
-            threading.Thread(target=play_youtube_video, args=(value,), daemon=True).start()
-            return "done"
-
-
-          elif action == "open":
-            if value:
-              if value in apps:
-                speak(f"Opening {value}")
-                os.system(f"start {apps[value]}")
-              else:
-                 speak(f"I don't know how to open {value}")
-           
+            # 4. OPEN APPS LOGIC
+            elif action == "open":
+                if value:
+                    if value in apps:
+                       speak(f"Opening {value}")
+                       os.system(f"start {apps[value]}")
+                       return "done"
+                    else:
+                       speak(f"I don't know how to open {value}")
+                       return "done"
             else:
                 speak("What should I open sir?")
                 return "done"
-        
-          else:
-               speak("I didn't understand that part")
-               return "done"
 
+        return "not_found"
 # -------------------------
 #      PLAY YOUTUBE
 # -------------------------
     def play_youtube_video(query):
-
     #  SMART MOOD BASED SEARCH
         if "motivation" in query:
            query = "motivational speech tamil"
@@ -363,309 +386,309 @@ try:
 #      EXECUTE COMMAND
 # -------------------------
     def execute_command(command):
+        command = command.lower()
 
-       command = command.lower()
-       parts = command.split(" and ")
+# =====================
+# MEMORY SYSTEM (HYBRID)
+# =====================        
 
-       for part in parts:
+        if "my name is" in command:
+            name = command.replace("my name is", "").strip()
+            save_memory("name", name)
+            speak(f"Nice to meet you {name}")
+            return "done"
 
-         intent = detect_intent(part)
+        elif "what is my name" in command:
+            name = get_memory("name")
+            if name:
+                speak(f"Your name is {name}")
+            else:
+                speak("I don't know your name yet")
+            return "done"
+# =====================
+# CLOSE APPS (HYBRID)
+# =====================
+        elif "close" in command:
 
-        # =========================
-        # OPEN
-        # =========================
-         if intent == "open":
+            if "chrome" in command or "google" in command:
+                os.system("taskkill /f /im chrome.exe")
+                speak("Closing Chrome")
 
-            if "youtube" in part and "search" in part:
-                query = part.replace("open youtube", "").replace("search", "").strip()
-                speak(f"Opening YouTube and searching {query}")
-                webbrowser.open(f"https://www.youtube.com/results?search_query={query}")
+            elif "notepad" in command:
+                os.system("taskkill /f /im notepad.exe")
+                speak("Closing Notepad")
 
-            elif "youtube" in part:
-                speak("Opening YouTube")
-                webbrowser.open("https://youtube.com")
+            elif "cmd" in command:
+                os.system("taskkill /f /im cmd.exe")
+                speak("Closing command prompt")
 
-            elif "google" in part:
+            elif "explorer" in command:
+                os.system("taskkill /f /im explorer.exe")
+                speak("Closing file explorer")
+
+            else:
+            # fallback (ANY APP)
+                app_name = command.replace("close", "").strip()
+
+                if "google" in app_name:
+                    app_name = "chrome"
+
+                close_any_app(app_name)
+
+            return "done"
+        
+        elif "time" in command:
+            current_time = datetime.datetime.now().strftime("%I:%M %p")
+            speak(f"The time is {current_time}")
+            return "done"
+        
+        elif "date" in command or "today" in command:
+            today = datetime.datetime.now().strftime("%A, %d %B %Y")
+            speak(f"Today is {today}")
+            return "done"
+
+# =====================
+# SEARCH GOOGLE
+# =====================
+        elif "search" in command:
+
+            query = command.replace("search", "") \
+                       .replace("in google", "") \
+                       .replace("for", "") \
+                       .strip()
+
+            if query == "":
+                speak("What should I search, sir?")
+                return "done"
+
+            search_google_auto(query)
+            return "done"
+
+# =====================
+# OPEN APPS (HYBRID)
+# =====================
+        elif "open" in command:
+
+            if "notepad" in command:
+                os.system("notepad")
+                speak("Opening Notepad")
+
+            elif "chrome" in command or "google" in command:
+                webbrowser.open("https://www.google.com")
                 speak("Opening Google")
-                webbrowser.open("https://google.com")
 
-            elif "notepad" in part:
-                os.system("start notepad")
-                speak("Opening notepad")
+            elif "youtube" in command:
+                webbrowser.open("https://www.youtube.com")
+                speak("Opening YouTube")
 
-            elif "cmd" in part:
+            elif "whatsapp" in command:
+                webbrowser.open("https://web.whatsapp.com")
+                speak("Opening WhatsApp")
+
+            elif "gmail" in command or "email" in command:
+                webbrowser.open("https://mail.google.com")
+                speak("Opening Gmail")
+
+            elif "file explorer" in command:
+                os.system("explorer")
+                speak("Opening File Explorer")
+
+            elif "cmd" in command:
                 os.system("start cmd")
                 speak("Opening command prompt")
 
-            elif "vs code" in part:
-                os.system("start code")
-                speak("Opening VS Code")
+            elif "settings" in command:
+                os.system("start ms-settings:")
+                speak("Opening Settings")
 
-            #  Apps dictionary
+            elif "photos" in command:
+                os.system("start ms-photos:")
+                speak("Opening Photos")
+
             else:
-                for app in apps:
-                    if app in part:
-                        speak(f"Opening {app}")
-                        os.system(f"start {apps[app]}")
-                        break
+                app_name = command.replace("open", "").strip()
+                open_any_app(app_name)
 
-            if "music" in part:
-                play_music()
+            return "done"
 
-        # =========================
-        # CLOSE
-        # =========================
-         elif intent == "close":
-            for app in apps:
-                if app in part:
-                    speak(f"Closing {app}")
-                    os.system(f"taskkill /f /im {apps[app]}")
-                    break
-
-        # =========================
-        # PLAY
-        # =========================
-         elif intent == "play":
-            query = part.replace("play", "").strip()
-            if query:
-                speak(f"Playing {query} on YouTube")
-                play_youtube_video(query)
+# =====================
+# TYPE ANYWHERE (HYBRID)
+# =====================  
+      
+        elif "type" in command:
+            text = command.replace("type", "").strip()
+            if text:
+                type_anywhere(text)
+                speak("Typing completed")
             else:
-                speak("What should I play sir?")
+                speak("What should I type, sir?")
+            return "done"
 
-        # =========================
-        # SEARCH
-        # =========================
-         elif intent == "search":
-            query = part.replace("search", "").strip()
-            speak(f"Searching {query}")
-            webbrowser.open(f"https://www.google.com/search?q={query}")
+# =====================
+# REPLY ANYWHERE (HYBRID)
+# =====================  
 
-        # =========================
-        # TIME
-        # =========================
-         elif intent == "time":
-            now = datetime.datetime.now().strftime("%H:%M")
-            speak(f"The time is {now}")
+        elif "reply" in command:
+            text = command.replace("reply", "").strip()
+            auto_reply(text)
+            speak("Message sent")
+            return "done"
 
-        # =========================
-        # SYSTEM
-        # =========================
-         elif "shutdown" in part:
-            speak("Shutting down the computer")
-            os.system("shutdown /s /t 5")
+        return "not_found"
 
-         elif "restart" in part:
-            speak("Restarting the computer")
-            os.system("shutdown /r /t 5")
-
-        # =========================
-        # EXIT
-        # =========================
-         elif "bye" in part or "stop" in part:
-            speak("Going to sleep")
-            return "sleep"
-
-         else:
-            speak("Sorry sir I don't know that command")
-
-         return None
 # -------------------------
 #      PLAY MUSIC
 # -------------------------
     def play_music():
-         possible_paths = [
-           os.path.expanduser("~/Music"),
-           "C:\\Music",
-           "D:\\Music"
-         ]
-         music_folder = None
-         for path in possible_paths:
-            if os.path.exists(path):
-              music_folder = path
-              break
-            if not music_folder:
-              speak("I couldn't find your music folder")
-              return
-            
-         songs = [song for song in os.listdir(music_folder) if song.endswith((".mp3", ".wav"))]
-         if songs:
-           song = random.choice(songs)
-           speak("Playing music")
-           os.startfile(os.path.join(music_folder, song))
-         else:
-           speak("No songs found")
-
-# -------------------------
-#      STARTUP
-# -------------------------
-    print("Jarvis is ready...")
-    speak("Jarvis is ready")
-
-    wake_word = ["jarvis on","hey jarvis","jarvis"]
-    running = True
-    is_awake = False
-# =========================
-#      MAIN LOOP
-# =========================
-
-    def wake_listener():
-      global is_awake
-
-      while True:
-        if not is_awake:
-            command = listen()
-
-            if command and any(word in command for word in wake_word):
-                print("WAKE WORD DETECTED ")
-
-                is_awake = True #SET FIRST.....
-
-                time.sleep(0.3)
-
-                speak("Hello sir! I am listening.")
-                time.sleep(0.3)
-                speak("how can i help you sir ?")
-                #time.sleep(0.3)
-                speak("Waiting for your command")
-                print("Jarvis : Waiting for your command....")
-                #is_listening_shown = False #RESET......
-                #time.sleep(1)
-                #is_awake = True
-
-        else:        
-
-           time.sleep(0.3)
-
-
-
-
-    def command_listener():
-      global is_awake, running
-
-      while running:
-        if is_awake:
-            try:   
-
-                # 🎤 FIRST LISTEN
-                command = listen()
-
-                if "jarvis" in command:
-                    speak("Yes sir")
+        possible_paths = [os.path.expanduser("~/Music"), "C:\\Music", "D:\\Music"]
+        music_folder = None
     
-                    command = listen()
-                    command = clean_command(command)
+        for path in possible_paths:
+            if os.path.exists(path):
+               music_folder = path
+               break
+            
+        if not music_folder: # Loop-ku outside check processes
+            speak("I couldn't find your music folder")
+            return
+        
+# -------------------------
+#  OPEN AND CLOSE ANY APP (FALLBACK)
+# -------------------------        
 
-                    execute_command(command)
+    def open_any_app(app_name):
+        app_name = app_name.strip()
+        os.system(f"start {app_name}")
+        speak(f"Opening {app_name}")  
 
-                if not command or len(command.strip()) < 2:
-                    continue
+    def close_any_app(app_name):
+        app_name = app_name.strip() + ".exe"
+        os.system(f"taskkill /f /im {app_name}")
+        speak(f"Closing {app_name}")
 
-                #  REMOVE WAKE WORD
-                for word in wake_word:
-                    if word in command:
-                        command = command.replace(word, "").strip()
+# -------------------------
+#  TYPE ANYWHERE (FALLBACK)
+# -------------------------  
 
-                #  WAIT FOR FULL SENTENCE (SECOND LISTEN)
-                time.sleep(1.5)
-                extra = listen()
+    def type_anywhere(text):
+        pyautogui.write(text, interval=0.03)
 
-                while extra:
+# -------------------------
+#  AUTO REPLY ANYWHERE (FALLBACK)
+# -------------------------  
 
-                    command += " " + extra
-                    extra = listen()
+    def auto_reply(text):
+        pyautogui.write(text, interval=0.03)
+        pyautogui.press("enter")            
 
-                #  SMART EXECUTION
-                result = execute_command(command)
-                if result == "sleep":
-                    is_awake = False
-                    continue
+#-------------------------
+#      AI FUNCTION 
+# -------------------------
 
-                smart_result = execute_smart_command(command)
+    OPENROUTER_API_KEY = "YOUR_API_KEY_HERE"
 
-                #  EXIT COMMAND
-                if command.lower() in ["bye", "ok bye", "stop"]:
-                    speak("Going to sleep sir")
-                    is_awake = False
-                    continue
+    import requests
 
-                #  SENTIMENT ANALYSIS
-                try:
-                    if sentiment_model is None:
-                        get_sentiment_model()
+    def ask_ai(prompt):
+        try:
+            response = requests.post(
+                url="https://openrouter.ai/api/v1/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Content-Type": "application/json"
+                },
+                json={
+                    "model": "mistralai/mistral-7b-instruct",
+                    "messages": [
+                    {"role": "system", "content": "You are Jarvis, a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                    ]
+                }
+            )
 
-                    result_sentiment = sentiment_model(command)
-                    label = result_sentiment[0]["label"]
-                except:
-                    label = None
+            data = response.json()
+            return data["choices"][0]["message"]["content"]
 
-                if label == "NEGATIVE":
-                    mood = "sad"
-                    reply_prefix = "I'm here for you sir. "
-                elif label == "POSITIVE":
-                    mood = "happy"
-                    reply_prefix = "That's great to hear sir! "
-                else:
-                    mood = "neutral"
-                    reply_prefix = ""
+        except Exception as e:
+            print("Error:", e)
+            return "Sorry sir, something went wrong."
+            
+# -------------------------
+#      STARTUP LOGIC
+# -------------------------
+    def start_jarvis():
+        try:
+            # Clean startup to avoid double printing
+            print("JARVIS SYSTEM INITIALIZED...")
+            time.sleep(1)
+            speak("Jarvis is ready. Listening for wake word, sir.")
+            return True
+        except Exception as e:
+            print(f"Startup error: {e}")
+            return False
 
-                #  BASIC CONVERSATION
-                if "how are you" in command:
-                    reply = "I am always fine sir. What about you?"
-                elif "your name" in command:
-                    reply = "I am Jarvis, your personal assistant."
-                elif "time" in command:
-                    now = datetime.datetime.now().strftime("%H:%M")
-                    reply = f"The time is {now}"
-                else:
-                    reply = ""
+    start_jarvis()
 
-                #  FINAL RESPONSE
-                if reply:
-                    final_reply = reply_prefix + reply
-                else:
-                    ai_reply = ask_gpt(command)
-                    final_reply = reply_prefix + ai_reply
+# WAKE WORDS & MAIN LOOP
+    wake_words = ["jarvis on", "hey jarvis", "jarvis"]
+    is_awake = False
+    running = True
 
-                print(f"🤖 Jarvis: {final_reply}")
-                speak(final_reply, mood)
+# =========================
+#      MAIN LOOP (FIXED)
+# =========================
+    while running:
+        try:
+            # STATE A: WAITING FOR WAKE WORD (Jarvis Silent-ah irupparu)
+            if not is_awake:
+                command = listen() 
+                if any(word in command for word in wake_words):
+                    is_awake = True
+                    print("\n✅ WAKE WORD ACCEPTED")
+                    speak("Welcome back sir, how can I help you today?")
+                continue 
 
-            except Exception:   
-                print("Runtime issuse handled")
-                speak("Please wait sir , something went wrong")
+            # STATE B: COMMAND MODE (Wake word accept aana mattum dhaan inga varum)
+            speak("I am listening, sir") 
+            time.sleep(0.3) 
+        
+            command = listen()
+            if not command:
                 continue
 
-        else:
-            time.sleep(0.1)
-#print("Jarvis Is Ready...")
+            command = clean_command(command)
 
-# =========================
-#   GPT TEST
-# =========================
+            # EXIT COMMAND (Back to Silent Mode)
+            if any(word in command for word in ["go to sleep", "offline", "stop"]):
+                speak("Understood sir, going to sleep mode.")
+                is_awake = False
+                continue
 
-      response = ask_gpt("say hello like jarvis")
-      print("GPT TEST:", response)       
+            # --- TASK EXECUTION SEQUENCE ---
+            result = execute_command(command)
+        
+            if result == "not_found":
+                smart_result = execute_smart_command(command)
+            else:
+                smart_result = "done"    
+            
+            if smart_result == "not_found":
+                reponse = ask_ai(command)
+                if response:
+                    speak(reponse)
+                else:
+                    speak("Sir,Try Again Later")    
 
-# =========================
-#   START JARVIS THREADS
-# =========================
-
-    threading.Thread(target=wake_listener, daemon=True).start()
-    threading.Thread(target=command_listener, daemon=True).start()
-
-    while True:
-     time.sleep(1)
+        except Exception as e:
+            print(f"Loop Error: {e}")
 
 except KeyboardInterrupt:
-    print("\nJarvis stopped safely")
+    print("\n[!] Jarvis is going offline. Goodbye, Sir.")
     try:
-        speak("Shutting down sir")
-    except:
-        pass
+        sys.exit(0)
+    except SystemExit:
+        os._exit(0)
 
-except Exception as e:
-    print("⚠️ Hidden Error:", e)
-    try:
-        speak("Please wait sir, some error occurred")
-    except:
-        pass             
+    except Exception as e:
+    # The Real Time Error Log (Hidden from User)
+        print(f"\n[!] Hidden System Error: {e}")           
