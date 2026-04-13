@@ -1,26 +1,17 @@
-# Jarvis AI Assistant 🤖
+# 🤖 AI Voice Assistant (voice_assistant)
 
-An intelligent voice-controlled AI assistant built using Python.
+A smart AI-powered voice assistant built using Python that can perform tasks like opening apps, searching the web, and interacting using voice commands.
 
 ## 🚀 Features
-- 🎤 Voice recognition
-- 🤖 AI conversation (OpenRouter API)
-- 🌐 Open websites (Google, YouTube, Gmail)
-- 📂 Open & close applications
-- 🔍 Smart Google search
-- 🧠 Memory system (remembers user details)
-- ⏰ Time & date
+- Voice Recognition
+- Text-to-Speech
+- Open Apps
+- Web Automation
+- Memory System
+- AI Integration
 
-## 🛠️ Tech Stack
-- Python
-- SpeechRecognition
-- pyttsx3
-- OpenRouter API
-- Flask (future integration)
+## 🛠 Tech
+Python, APIs, Automation
 
-## ⚙️ Setup
-
-1. Clone the repository  
-2. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
+## 💼 Author
+Jeeva Prasath M
