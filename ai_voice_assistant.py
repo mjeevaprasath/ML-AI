@@ -1,15 +1,15 @@
-# ===============================
-#     -JARVIS PERSONAL ASSISTANT- 
-# ===============================
+# =====================================================================================================
+#     - ( AI VOICE ASSISTANT ) PROJECT NAME : [ M L ]  PERSONAL ASSISTANT - 
+# =====================================================================================================
 import os
-from pydoc import text
 import sys
+from pydoc import text
 from urllib import response
 
 
 try:
     import time
-    print("Jarvis Is Starting...")
+    print("ML Is Starting...")
     time.sleep(1)
 
     import speech_recognition as sr
@@ -69,8 +69,6 @@ try:
         speak("Here are the results, sir")
 
     os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "1"
-
-    import google.genai as genai
 
 #===============================
 #     -.env file- 
@@ -141,7 +139,7 @@ try:
         command = command.lower()
 
     # remove wake words
-        command = command.replace("jarvis", "")
+        command = command.replace("Ml", "")
         command = command.replace("hey", "")
         command = command.replace("please", "")
 
@@ -203,7 +201,7 @@ try:
         global is_speaking
         if is_speaking: return
         is_speaking = True
-        print(f"🤖 Jarvis: {text}")
+        print(f"🤖 ML: {text}")
 
         try:
             asyncio.run(amime_speak_logic(text))
@@ -216,24 +214,41 @@ try:
 # -------------------------
 #      LISTEN FUNCTION
 # -------------------------
+    # -------------------------
+#      LISTEN FUNCTION (FIXED)
+# -------------------------
     def listen():
-    # \r extra spaces use panna thaan blink problem solve aagum
-        print("\r🎤 Jarvis is listening...          ", end="", flush=True)
+        global is_listening_shown
 
         try:
-            with sr.Microphone() as source:
-            # 0.2 duration makes it very fast
-                r.adjust_for_ambient_noise(source, duration=0.2)
-            # Timeout 3 and Phrase 3 is enough for wake words
-                audio = r.listen(source, timeout=3, phrase_time_limit=3)
+        # Show listening only once (no blinking)
+            if not is_listening_shown:
+               print("🎤 ML is listening..." ,end="\r")
+               is_listening_shown = True
 
-            print("\r🔍 Processing...                ", end="", flush=True)
+            with sr.Microphone() as source:
+                r.adjust_for_ambient_noise(source, duration=0.5)
+
+                try:
+                    audio = r.listen(source, timeout=5, phrase_time_limit=5)
+                except sr.WaitTimeoutError:
+                    return ""
+
+            print("🔍 Processing...")
             command = r.recognize_google(audio).lower()
-            print(f"\n👤 You: {command}")
+            print(f"👤 You: {command}")
+  
+            # Reset UI state after successful input
+            is_listening_shown = False
+
             return command
 
-        except (sr.WaitTimeoutError, sr.UnknownValueError, Exception):
-            print("\r                                 ", end="", flush=True)
+        except sr.UnknownValueError:
+        # Speech not understood
+           return ""
+
+        except Exception as e:
+            print(f"Listening error: {e}")
             return ""
 # -------------------------
 #      SENTIMENT MODEL
@@ -250,7 +265,7 @@ try:
             "sentiment-analysis",
             model="sshleifer/tiny-distilbert-base-uncased-finetuned-sst-2-english"
           )
-          model_loaded = True
+          model_loaded = True 
 
         return sentiment_model
 
@@ -590,47 +605,58 @@ try:
     import requests
 
     def ask_ai(prompt):
+        api_key_from_env = os.getenv("OPENROUTER_API_KEY") 
+    
+        if not api_key_from_env:
+            return "Sir, I can't find the API key in your .env file."
+
         try:
             response = requests.post(
                 url="https://openrouter.ai/api/v1/chat/completions",
                 headers={
-                    "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+                    "Authorization": f"Bearer {api_key_from_env}",
                     "Content-Type": "application/json"
                 },
                 json={
-                    "model": "mistralai/mistral-7b-instruct",
+                # Working Free Model
+                    "model": "google/gemini-2.0-flash-lite-preview-02-05:free", 
                     "messages": [
-                    {"role": "system", "content": "You are Jarvis, a helpful assistant."},
+                    {"role": "system", "content": "You are ML, a helpful assistant. Keep it short."},
                     {"role": "user", "content": prompt}
                     ]
-                }
+                },
+                timeout=15
             )
-
+        
             data = response.json()
-            return data["choices"][0]["message"]["content"]
+            if "choices" in data:
+                return data["choices"][0]["message"]["content"]
+            else:
+               print(f"AI Debug: {data}")
+               return "I am sorry sir, I couldn't get a response from the AI."
 
         except Exception as e:
-            print("Error:", e)
-            return "Sorry sir, something went wrong."
+            print(f"Connection Error: {e}")
+            return "Sorry sir, I'm having trouble connecting to my brain."
             
 # -------------------------
 #      STARTUP LOGIC
 # -------------------------
-    def start_jarvis():
+    def start_ml():
         try:
             # Clean startup to avoid double printing
-            print("JARVIS SYSTEM INITIALIZED...")
+            print("ML SYSTEM INITIALIZED...")
             time.sleep(1)
-            speak("Jarvis is ready. Listening for wake word, sir.")
+            speak("ML is ready. Listening for wake word, sir.")
             return True
         except Exception as e:
             print(f"Startup error: {e}")
             return False
 
-    start_jarvis()
+    start_ml()
 
 # WAKE WORDS & MAIN LOOP
-    wake_words = ["jarvis on", "hey jarvis", "jarvis"]
+    wake_words = ["ml on", "hey ml", "ml"]
     is_awake = False
     running = True
 
@@ -639,16 +665,19 @@ try:
 # =========================
     while running:
         try:
-            # STATE A: WAITING FOR WAKE WORD (Jarvis Silent-ah irupparu)
+            # STATE A: WAITING FOR WAKE WORD (ML Silent-ah stay)
             if not is_awake:
                 command = listen() 
+                if not command:
+                    time.sleep(1)
+                    continue
                 if any(word in command for word in wake_words):
                     is_awake = True
                     print("\n✅ WAKE WORD ACCEPTED")
-                    speak("Welcome back sir, how can I help you today?")
+                    speak("Welcome back sir, how can I help you today? ,I am ML, your personal assistant")
                 continue 
 
-            # STATE B: COMMAND MODE (Wake word accept aana mattum dhaan inga varum)
+            # STATE B: COMMAND MODE (Wake word accept then come here)
             speak("I am listening, sir") 
             time.sleep(0.3) 
         
@@ -673,17 +702,17 @@ try:
                 smart_result = "done"    
             
             if smart_result == "not_found":
-                reponse = ask_ai(command)
-                if response:
-                    speak(reponse)
+                ai_response = ask_ai(command) 
+                if ai_response:
+                    speak(ai_response)
                 else:
-                    speak("Sir,Try Again Later")    
+                    speak("Sir, Try Again Later")  
 
         except Exception as e:
             print(f"Loop Error: {e}")
 
 except KeyboardInterrupt:
-    print("\n[!] Jarvis is going offline. Goodbye, Sir.")
+    print("\n[!] ML is going offline. Goodbye, Sir.")
     try:
         sys.exit(0)
     except SystemExit:
