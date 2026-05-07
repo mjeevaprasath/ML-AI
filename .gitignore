@@ -1,26 +1,29 @@
-# Virtual Environment
+# Virtual env
 venv/
 env/
 
-# Python cache
+# Python
 __pycache__/
 *.pyc
 
-# Environment variables
+# Environment
 .env
 
 # VS Code
 .vscode/
 
-# Large ML / binary files
+# Large files
 *.vrm
 *.bin
 *.dll
 *.jar
 
-# Rhubarb lip sync files
-ml_backend/rhubarb/
+# Audio generated files
+*.mp3
+*.wav
 
-# OS files
-.DS_Store
-Thumbs.db
+# Media folder
+ml_backend/media/
+
+# Rhubarb
+ml_backend/rhubarb/
