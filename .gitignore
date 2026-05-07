@@ -1,29 +1,92 @@
-# Virtual env
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environment
 venv/
 env/
+ENV/
+.venv/
 
-# Python
-__pycache__/
-*.pyc
+# =========================
+# Django
+# =========================
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
 
-# Environment
+# Django media & static
+media/
+staticfiles/
+
+# =========================
+# Environment Variables
+# =========================
 .env
+.env.*
+!.env.example
 
-# VS Code
+# =========================
+# VS Code / IDE
+# =========================
 .vscode/
+.idea/
+*.swp
+*.swo
 
-# Large files
-*.vrm
-*.bin
-*.dll
-*.jar
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
 
-# Audio generated files
+# =========================
+# Node Modules (if frontend exists)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Build / Distribution
+# =========================
+build/
+dist/
+*.egg-info/
+
+# =========================
+# Audio / Media Files
+# =========================
 *.mp3
 *.wav
+*.ogg
+*.flac
+*.aac
+*.m4a
 
-# Media folder
+# Generated media folders
 ml_backend/media/
 
-# Rhubarb
-ml_backend/rhubarb/
+# =========================
+# Cache Files
+# =========================
+.cache/
+.pytest_cache/
+.mypy_cache/
+
+# =========================
+# Jupyter Notebook
+# =========================
+.ipynb_checkpoints/
+
+# =========================
+# Temporary Files
+# =========================
+temp/
+tmp/
+*.tmp
