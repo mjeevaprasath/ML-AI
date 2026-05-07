@@ -57,6 +57,8 @@ MIDDLEWARE = [
 # =====================
 ROOT_URLCONF = 'ml_backend.urls'
 
+WSGI_APPLICATION = 'ml_backend.wsgi.application'
+
 # =====================
 # TEMPLATES (✅ FIXED HERE)
 # =====================
