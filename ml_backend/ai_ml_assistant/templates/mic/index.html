@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI Avatar</title>
+
+    <style>
+        body {
+            margin: 0;
+            background: black;
+            color: white;
+            font-family: Arial;
+        }
+
+        #avatar-container {
+            width: 100%;
+            height: 70vh;
+        }
+
+        #chat-box {
+            height: 20vh;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        #mic-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background: teal;
+            border: none;
+            color: white;
+        }
+    </style>
+
+    <!-- 🔥 IMPORT MAP -->
+    <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+        "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js"
+      }
+    }
+    </script>
+
+</head>
+
+<body>
+
+    <!-- 🎭 Avatar -->
+    <div id="avatar-container"></div>
+
+    <!-- 💬 Chat -->
+    <div id="chat-box"></div>
+
+    <!-- 🎤 Button -->
+    <button id="mic-btn">🎤 Speak</button>
+
+    <!-- 🔥 JS -->
+    <script type="module" src="/static/js/mic.js?v=5"></script>
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lens Search</title>
+    <link rel="stylesheet" href="{% static 'css/lens.css' %}">
+</head>
+
+<body>
+
+<div class="main">
+
+    <!-- 🌙 DARK MODE -->
+    <button id="toggleMode" type="button">🌙</button>
+
+    <!-- 🔍 SEARCH BOX -->
+    <div class="search-box" id="searchBox">
+
+        <!-- ❗ IMPORTANT: prevent form submit issues -->
+        <form onsubmit="event.preventDefault(); sendLens();">
+
+            <input type="text" id="searchInput" placeholder="Ask Something...">
+
+            <!-- 🎤 MIC -->
+            <button id="voiceBtn" type="button">🎤</button>
+
+        </form>
+
+    </div>
+
+    <!-- 📊 RESULTS -->
+    <div id="results"></div>
+
+</div>
+
+<!-- JS -->
+<script src="{% static 'js/lens.js' %}"></script>
+
+</body>
+</html>

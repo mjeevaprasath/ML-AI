@@ -1,0 +1,117 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.login-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    width: 320px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    animation: fadeIn 1s ease;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Inputs */
+.input-box {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.input-box input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-bottom: 2px solid #ccc;
+    outline: none;
+}
+
+.input-box label {
+    position: absolute;
+    left: 0;
+    top: 12px;
+    color: #999;
+    transition: 0.3s;
+}
+
+.input-box input:focus,
+.input-box input:valid {
+    border-color: #667eea;
+}
+
+.input-box input:focus + label,
+.input-box input:valid + label {
+    top: -10px;
+    font-size: 12px;
+    color: #667eea;
+}
+
+/* Button */
+button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #667eea;
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 16px;
+}
+
+/* Loading animation */
+button.loading {
+    background: #999;
+    pointer-events: none;
+}
+
+/* Fade animation */
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.links {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.links a {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.links a:hover {
+    text-decoration: underline;
+}
+
+.links1 {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.links1 a {
+    color: #667eea;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.links1 a:hover {
+    text-decoration: underline;
+}

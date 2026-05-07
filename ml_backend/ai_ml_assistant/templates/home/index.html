@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Assistant - Jarvis UI</title>
+
+    <link rel="stylesheet" href="{% static 'css/home.css' %}">
+</head>
+
+<body>
+    <canvas id="bgCanvas"></canvas>
+
+    <div class="container">
+
+        <!-- TOP BAR -->
+        <div class="topbar">
+
+            <button class="icon-btn">
+                <img src="{% static 'images/home.jpg' %}" alt="home">
+            </button>
+
+            <button class="icon-btn">☰</button>
+
+            <a href="/logout/">
+                <button class="icon-btn">Logout</button>
+            </a>
+
+        </div>
+
+        <!-- TITLE -->
+        <h1 class="title">ML ASSISTANT</h1>
+        <div class="line"></div>
+
+        <!-- CARDS -->
+        <div class="cards">
+
+            <!-- 🔍 LENS -->
+            <a href="/lens/">
+                <button class="card">
+                    <img src="{% static 'images/lens.jpg' %}">
+                </button>
+            </a>
+
+            <!-- 🎤 MIC -->
+            <a href="/mic/">
+                <button class="card">
+                    <img src="{% static 'images/mic.jpg' %}">
+                </button>
+            </a>    
+
+            <!-- 📝 NOTES -->
+             <a href="/note/">
+                <button class="card">
+                    <img src="{% static 'images/note.jpg' %}">
+                </button>
+            </a>    
+
+        </div>
+
+        <div class="line1"></div>
+
+        <!-- WELCOME TEXT -->
+        <div class="welcome">WELCOME TO ML WORLD</div>
+
+    </div>
+
+    <script src="{% static 'js/home.js' %}"></script>
+</body>
+</html>
