@@ -1,34 +1,9 @@
-# 🔐 Secrets
-.env
-
-# 🐍 Python
-_pycache_/
-*.pyc
-*.pyo
-*.pyd
-
-# 📦 Virtual Environment
 venv/
-env/
-.venv/
-
-# 🎵 Audio files (Jarvis use)
-*.mp3
+__pycache__/
+*.pyc
+.env
 *.wav
-
-# 📂 Build / Distribution
-build/
-dist/
-*.egg-info/
-
-# 🧪 Cache / Testing
-.pytest_cache/
-.coverage
-htmlcov/
-
-# 🧠 IDE / Editor
-.vscode/
-.idea/
-
-# 📓 Jupyter
-.ipynb_checkpoints
+*.mp3
+*.zip
+*.exe
+node_modules/
