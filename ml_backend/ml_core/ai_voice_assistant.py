@@ -16,9 +16,14 @@ try:
     import time
     print("ML Is Starting...")
     time.sleep(1)
-
-    import speech_recognition as sr
-    import pyttsx3  
+    try:
+        import speech_recognition as sr
+    except:
+        sr = None
+    try:        
+        import pyttsx3
+    except:
+        pyttsx3 = None      
     import datetime
     import webbrowser
     import random
@@ -26,11 +31,14 @@ try:
     import edge_tts
     import asyncio
     from langdetect import detect
-    from selenium import webdriver
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.chrome.service import Service
-    from selenium.webdriver.chrome.options import Options   
-    from webdriver_manager.chrome import ChromeDriverManager
+    try:
+        from selenium import webdriver
+        from selenium.webdriver.common.by import By
+        from selenium.webdriver.chrome.service import Service
+        from selenium.webdriver.chrome.options import Options   
+        from webdriver_manager.chrome import ChromeDriverManager
+    except:
+        webdriver = None    
     import threading
     import logging
     #import pyautogui
