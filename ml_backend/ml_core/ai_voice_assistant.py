@@ -142,15 +142,28 @@ try:
     r.pause_threshold = 0.8
 
 # =========================
-#      TTS ENGINE
+# TTS ENGINE SETUP
 # =========================
-    #try:  
-        #engine = pyttsx3.init()
-        #engine.setProperty('rate', 160)
-        #engine.setProperty('volume', 1)
-    #except:
+
     engine = None
-        #print("pyttsx3 TTS engine not available, falling back to web mode",e)    
+
+    try:
+        import pyttsx3
+
+        engine = pyttsx3.init()
+
+        voices = engine.getProperty('voices')
+
+        if voices:
+            engine.setProperty('voice', voices[0].id)
+
+        engine.setProperty('rate', 170)
+
+        print("✅ pyttsx3 initialized")
+
+    except Exception as e:
+        print(f"⚠️ pyttsx3 disabled on Render: {e}")
+        engine = None    
 
     import sqlite3
 
@@ -265,12 +278,17 @@ try:
         global is_speaking, WEB_MODE
 
     # 🌐 Frontend mode → no backend voice
-        if WEB_MODE:
-            print(f"🤖 (WEB) ML: {text}")
+        if WEB_MODE or engine is None:
+            print(f"🤖 (WEB MODE) ML: {text}")
             return text
 
     # 🖥️ Local fallback (NO EDGE-TTS, NO PYTTSX3)
-        print(f"🤖 ML: {text}")
+        try:
+            engine.say(text)
+            engine.runAndWait()
+        except Exception as e:
+            #print(f"🤖WEB MODE ML: {text}")
+            print(f"⚠️ Error occurred while speaking: {e}")
         return text
 # =========================
 #      LISTEN FUNCTION
