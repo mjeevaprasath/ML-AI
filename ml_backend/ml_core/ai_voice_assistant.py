@@ -830,7 +830,10 @@ try:
 # =========================
 #      MAIN LOOP (FIXED)
 # =========================
-    if __name__ == "__main__":
+    #if __name__ == "__main__":
+    def start_voice_assistant():
+        global is_awake, running
+
         start_ml()
 
         while running:
@@ -870,6 +873,9 @@ try:
 
             except Exception as e:
                 print(e)
+
+    if __name__ == "__main__":
+        start_voice_assistant()            
 
 except KeyboardInterrupt:
     print("\n[!] ML is going offline. Goodbye, Sir.")
