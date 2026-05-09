@@ -162,7 +162,7 @@ try:
         print("✅ pyttsx3 initialized")
 
     except Exception as e:
-        print(f"⚠️ pyttsx3 disabled on Render: {e}")
+        print(f"⚠️ pyttsx3 TTS engine not available , falling back to web mode: {e}")
         engine = None    
 
     import sqlite3
@@ -749,7 +749,21 @@ try:
     from dotenv import load_dotenv
     load_dotenv()
 
-    client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+    client = None
+
+    try:
+        GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+        if GROQ_API_KEY:
+            client = Groq(api_key=GROQ_API_KEY)
+            print("✅ Groq initialized")
+
+        else:
+            print("⚠️ GROQ_API_KEY missing")
+
+    except Exception as e:
+        print("Groq Init Error:", e)
+        client = None
 
 #==========================
 #   WEB COMMAND FUNCTION 
