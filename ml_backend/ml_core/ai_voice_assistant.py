@@ -33,7 +33,7 @@ try:
     from webdriver_manager.chrome import ChromeDriverManager
     import threading
     import logging
-    import pyautogui
+    #import pyautogui
     import json
 
 #===============================
@@ -68,8 +68,8 @@ try:
         webbrowser.open("https://www.google.com")
         time.sleep(3)  # wait for browser
 
-        pyautogui.write(query, interval=0.05)
-        pyautogui.press("enter")
+        #pyautogui.write(query, interval=0.05)
+        #pyautogui.press("enter")
 
         speak("Here are the results, sir")
 
@@ -617,15 +617,17 @@ try:
 # =========================== 
 
     def type_anywhere(text):
-        pyautogui.write(text, interval=0.03)
+        #pyautogui.write(text, interval=0.03)
+        print("Typing disabled on Render")
 
 # =================================
 #  AUTO REPLY ANYWHERE (FALLBACK)
 # =================================
 
     def auto_reply(text):
-        pyautogui.write(text, interval=0.03)
-        pyautogui.press("enter")            
+        #pyautogui.write(text, interval=0.03)
+        #pyautogui.press("enter")
+        print("Auto-reply disabled on Render")            
 
 # ==========================
 #      AI FUNCTION 
