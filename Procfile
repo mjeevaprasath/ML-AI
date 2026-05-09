@@ -1,1 +1,1 @@
-web: gunicorn ml_backend.wsgi
+web: gunicorn ml_backend.wsgi:application
