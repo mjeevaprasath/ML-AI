@@ -25,7 +25,7 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 # =====================
 SECRET_KEY = 'django-insecure-demo-key'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['ml-ai-1.onrender.com', '127.0.0.1', 'localhost']
 
 # =====================
 # APPLICATIONS
