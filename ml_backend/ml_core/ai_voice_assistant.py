@@ -150,7 +150,7 @@ try:
         engine.setProperty('volume', 1)
     except:
         engine = None
-        print("pyttsx3 TTS engine not available, falling back to web mode")    
+        print("pyttsx3 TTS engine not available, falling back to web mode",e)    
 
     import sqlite3
 
