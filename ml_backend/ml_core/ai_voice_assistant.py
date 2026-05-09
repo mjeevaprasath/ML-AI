@@ -144,13 +144,13 @@ try:
 # =========================
 #      TTS ENGINE
 # =========================
-    try:  
-        engine = pyttsx3.init()
-        engine.setProperty('rate', 160)
-        engine.setProperty('volume', 1)
-    except:
-        engine = None
-        print("pyttsx3 TTS engine not available, falling back to web mode",e)    
+    #try:  
+        #engine = pyttsx3.init()
+        #engine.setProperty('rate', 160)
+        #engine.setProperty('volume', 1)
+    #except:
+    engine = None
+        #print("pyttsx3 TTS engine not available, falling back to web mode",e)    
 
     import sqlite3
 
