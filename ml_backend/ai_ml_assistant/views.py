@@ -83,6 +83,15 @@ def signup_page(request):
 # =====================
 @login_required
 def home_page(request):
+
+# 🌐 Render online website
+    if "onrender.com" in request.get_host():
+        return render(request, "home/index.html")
+
+# 💻 Localhost keeps login protection
+    if not request.user.is_authenticated:
+        return redirect("/login/")
+
     return render(request, "home/index.html")
 
 # =====================
