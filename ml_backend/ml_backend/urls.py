@@ -8,7 +8,17 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Test homepage
-    path('', lambda request: HttpResponse("ML AI Backend Running Successfully")),
+    path('', lambda request: HttpResponse("""
+        <html>
+        <head>
+        <title>ML AI Backend</title>
+        <link rel="icon" href="data:,">
+        </head>
+        <body>
+        <h1>ML AI Backend Running Successfully</h1>
+        </body>
+        </html>
+                                         """)),
 
     # App URLs
     path('api/', include('ai_ml_assistant.urls')),

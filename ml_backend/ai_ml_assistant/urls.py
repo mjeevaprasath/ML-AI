@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from .views import home
+from .views import chat_api    # if chat_api already exists
 
 urlpatterns = [
     path('', views.login_page),
@@ -25,4 +27,9 @@ urlpatterns = [
 
     path('process/', views.process),
     path('speak/',views.speak_api),
+
+    path('', home),
+
+    #path("api/chat/", chat_api),
+    path("chat/", views.chat_api),
 ]

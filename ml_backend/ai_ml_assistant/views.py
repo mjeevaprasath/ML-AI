@@ -22,6 +22,7 @@ import edge_tts
 import base64
 from .voice import generate_voice
 import pyttsx3
+from django.http import HttpResponse
 
 # =====================
 # ENV
@@ -125,6 +126,24 @@ def ask_ai(query):
         print("AI ERROR:", e)
         return "Server error"
 
+
+# =====================
+# RENDER HOME
+# =====================
+
+def home(request):
+    return HttpResponse("""
+    <html>
+        <head>
+            <title>ML AI Backend</title>
+            <link rel="icon" href="data:,">
+        </head>
+        <body>
+            <h1>ML AI Backend Running Successfully</h1>
+        </body>
+    </html>
+    """)
+
 # =====================
 # 📦 LENS (KEPT SAFE 😌)
 # =====================
@@ -150,7 +169,16 @@ def lens_api(request):
             return JsonResponse({
                 "results": ["Server error 😕"]
             })
-        
+
+# =====================
+# CHAT API
+# =====================
+
+def chat_api(request):
+    return JsonResponse({
+        "response": "ML AI Chat Working"
+    })  
+      
 # =====================
 # 🎭 EMOTION DETECT
 # =====================
